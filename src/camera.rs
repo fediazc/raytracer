@@ -1,11 +1,14 @@
+use std::rc::Rc;
+
 use crate::{
     color::{write_color, Color},
     hittable::{HitRecord, Hittable},
     interval::Interval,
+    material::Material,
     ray::Ray,
     utils::randf,
     vec3::unit_vector,
-    vec3::{random_unit_vector, Point3, Vec3},
+    vec3::{Point3, Vec3},
 };
 
 pub struct Camera {
@@ -107,11 +110,22 @@ fn ray_color(r: &Ray, depth: i32, world: &impl Hittable) -> Color {
         return Color::new(0.0, 0.0, 0.0);
     }
 
-    let mut hit_rec = HitRecord::new();
+    let hit_rec = world.hit(r, &Interval::new(0.001, f64::INFINITY));
 
-    if world.hit(r, &Interval::new(0.001, f64::INFINITY), &mut hit_rec) {
-        let direction = hit_rec.normal + random_unit_vector();
-        return 0.5 * ray_color(&Ray::new(hit_rec.p, direction), depth - 1, world);
+    if hit_rec.hit {
+        let mut scattered_ray = Ray::new(Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 0.0));
+        let mut attenuation = Color::new(0.0, 0.0, 0.0);
+
+        let did_scatter = match &hit_rec.mat {
+            Some(mat) => mat.scatter(r, &hit_rec, &mut attenuation, &mut scattered_ray),
+            _ => panic!("Ray hit Hittable with no material"),
+        };
+
+        if did_scatter {
+            return attenuation * ray_color(&scattered_ray, depth - 1, world);
+        }
+
+        return Color::new(0.0, 0.0, 0.0);
     }
 
     let unit_direction = unit_vector(r.direction());
