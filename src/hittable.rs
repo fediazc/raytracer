@@ -1,9 +1,8 @@
 use std::rc::Rc;
 
 use crate::{
-    color::Color,
     interval::Interval,
-    material::{Lambertian, Material},
+    material::Material,
     ray::Ray,
     vec3::{dot, Point3, Vec3},
 };

@@ -15,10 +15,6 @@ impl HittableList {
         Self { objects: vec![] }
     }
 
-    pub fn clear(&mut self) {
-        self.objects.clear();
-    }
-
     pub fn add(&mut self, object: impl Hittable + 'static) {
         self.objects.push(Box::new(object));
     }

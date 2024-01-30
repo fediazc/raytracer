@@ -3,7 +3,7 @@ use crate::{
     hittable::HitRecord,
     ray::Ray,
     utils::randf,
-    vec3::{dot, random_in_unit_sphere, random_unit_vector, reflect, refract, unit_vector},
+    vec3::{dot, random_unit_vector, reflect, refract, unit_vector},
 };
 
 pub trait Material {
